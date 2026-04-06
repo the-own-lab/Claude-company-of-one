@@ -1,9 +1,9 @@
 {
   "name": "claude-company-of-one",
   "version": "0.1.0",
-  "description": "Claude 一人公司 — Enterprise-grade agent pipelines for solo developers",
+  "description": "Claude for solopreneur — Enterprise-grade agent pipelines for solo developers",
   "author": {
-    "name": "Brian Rong"
+    "name": "Brian Huang"
   },
   "license": "MIT",
   "keywords": [
