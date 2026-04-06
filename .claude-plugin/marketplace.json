@@ -1,5 +1,4 @@
 {
-  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "claude-company-of-one",
   "description": "Claude for solopreneur — Enterprise-grade agent pipelines for solo developers",
   "owner": {
@@ -10,8 +9,12 @@
     {
       "name": "claude-company-of-one",
       "description": "Claude for solopreneur — Enterprise-grade agent pipelines for solo developers",
-      "source": ".",
-      "category": "development"
+      "version": "1.0.0",
+      "source": "./",
+      "authir": {
+        "name": "Brian Huang",
+        "email": "ronggg27825@gmail.com"
+      }
     }
   ]
 }
