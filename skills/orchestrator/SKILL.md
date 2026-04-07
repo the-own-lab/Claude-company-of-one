@@ -98,37 +98,128 @@ I want to make sure I help you the right way. Are you:
 
 ---
 
+## Pipeline Initialization
+
+When a pipeline is selected, BEFORE executing any stage:
+
+1. **Create the specs directory**: `docs/specs/{YYYY-MM-DD}-{type}-{slug}/`
+2. **Create TODO tasks** using TaskCreate for every stage in the pipeline
+3. **Detect UI involvement**: If the work involves frontend/UI/visual changes, insert a UI Wireframe stage
+
+### Task Creation per Pipeline
+
+**Debug Pipeline (5 stages):**
+```
+TaskCreate: "Stage 1/5: Reproduce (debugger)"
+TaskCreate: "Stage 2/5: Diagnose (debugger)"
+TaskCreate: "Stage 3/5: Fix (developer)"
+TaskCreate: "Stage 4/5: Verify (qa)"
+TaskCreate: "Stage 5/5: Document (devops)"
+```
+
+**Develop Pipeline (7 stages, or 8 if UI involved):**
+```
+TaskCreate: "Stage 1: Requirements (product-owner)"
+TaskCreate: "Stage 2: Design (architect)"
+TaskCreate: "Stage 2.5: UI Wireframe (ui-designer)"   ← only if UI work detected
+TaskCreate: "Stage 3: Plan (architect)"
+TaskCreate: "Stage 4: Implement (developer)"
+TaskCreate: "Stage 5: Test (qa)"
+TaskCreate: "Stage 6: Review (reviewer)"
+TaskCreate: "Stage 7: Merge (devops)"
+```
+
+**Refactor Pipeline (5 stages):**
+```
+TaskCreate: "Stage 1/5: Analyze (architect)"
+TaskCreate: "Stage 2/5: Plan (architect)"
+TaskCreate: "Stage 3/5: Execute (developer)"
+TaskCreate: "Stage 4/5: Verify (qa)"
+TaskCreate: "Stage 5/5: Review (reviewer)"
+```
+
+**Plan Pipeline (3 stages):**
+```
+TaskCreate: "Stage 1/3: Gather (product-owner)"
+TaskCreate: "Stage 2/3: Design (architect)"
+TaskCreate: "Stage 3/3: Document (architect)"
+```
+
+**Review Pipeline (3 stages):**
+```
+TaskCreate: "Stage 1/3: Scan (reviewer)"
+TaskCreate: "Stage 2/3: Deep Review (reviewer)"
+TaskCreate: "Stage 3/3: Report (reviewer)"
+```
+
+### Task Lifecycle
+
+At each stage transition:
+1. **TaskUpdate** current stage → `in_progress` (with activeForm showing stage name)
+2. Execute the stage (invoke agent)
+3. **TaskUpdate** current stage → `completed`
+4. Proceed to next stage
+
+---
+
+## UI Detection
+
+Before creating tasks, assess whether the work involves UI:
+
+**UI signals:** frontend, UI, UX, layout, design, page, screen, component, button, form, modal, theme, dark mode, responsive, CSS, style, visual, wireframe, mockup
+
+**If UI detected:**
+- Insert Stage 2.5 (UI Wireframe) between Design and Plan in the Develop pipeline
+- The ui-designer agent produces wireframes using Pencil MCP
+- HARD GATE after wireframe: user approves the UI before planning implementation
+
+**If no UI detected:**
+- Skip Stage 2.5 entirely
+- Pipeline proceeds normally without UI agent
+
+---
+
 ## Pipeline Orchestration
 
-Once a pipeline is selected, you orchestrate the FULL flow. Each stage invokes the appropriate agent. You do NOT stop between stages unless there is a hard gate.
+Once tasks are created, orchestrate the FULL flow. Each stage invokes the appropriate agent. You do NOT stop between stages unless there is a hard gate.
 
 ### Debug Pipeline Flow
 
 ```
 Stage 1: REPRODUCE
+  → TaskUpdate → in_progress
   → Invoke debugger agent
   → Agent produces REPRODUCE.md in docs/specs/{date}-fix-{slug}/
+  → TaskUpdate → completed
   → Auto-proceed to Stage 2
 
 Stage 2: DIAGNOSE
+  → TaskUpdate → in_progress
   → Invoke debugger agent
   → Agent produces DIAGNOSIS.md
   → HARD GATE: Present diagnosis, ask user to confirm before fixing
   → Wait for "approved" / feedback / "abort"
+  → TaskUpdate → completed
 
 Stage 3: FIX
+  → TaskUpdate → in_progress
   → Invoke devops agent to create fix branch
   → Invoke developer agent to implement fix (TDD)
+  → TaskUpdate → completed
   → Auto-proceed to Stage 4
 
 Stage 4: VERIFY
+  → TaskUpdate → in_progress
   → Invoke qa agent to verify fix
   → SOFT GATE: auto-proceed if tests pass, hard gate if tests fail
+  → TaskUpdate → completed
   → Auto-proceed to Stage 5
 
 Stage 5: DOCUMENT
+  → TaskUpdate → in_progress
   → Invoke debugger agent for postmortem (if warranted)
   → Invoke devops agent to merge + retrospective
+  → TaskUpdate → completed
   → Pipeline complete
 ```
 
@@ -136,39 +227,60 @@ Stage 5: DOCUMENT
 
 ```
 Stage 1: REQUIREMENTS
+  → TaskUpdate → in_progress
   → Invoke product-owner agent
   → Agent asks clarifying questions ONE AT A TIME
   → Agent produces REQUIREMENTS.md in docs/specs/{date}-{feature}/
   → HARD GATE: Present requirements, ask user to confirm scope
+  → TaskUpdate → completed
 
 Stage 2: DESIGN
+  → TaskUpdate → in_progress
   → Invoke architect agent
   → Agent scans codebase, proposes architecture
-  → Agent produces DESIGN.md
+  → Agent produces DESIGN.md (with Mermaid diagrams)
   → HARD GATE: Present design, ask user to approve approach
+  → TaskUpdate → completed
+
+Stage 2.5: UI WIREFRAME (only if UI work detected)
+  → TaskUpdate → in_progress
+  → Invoke ui-designer agent
+  → Agent produces wireframes using Pencil MCP
+  → HARD GATE: Present wireframes, ask user to approve UI
+  → TaskUpdate → completed
 
 Stage 3: PLAN
+  → TaskUpdate → in_progress
   → Invoke architect agent
-  → Agent produces PLAN.md with file-level steps
+  → Agent produces PLAN.md with file-level steps (incorporates UI specs if Stage 2.5 ran)
+  → TaskUpdate → completed
   → Auto-proceed to Stage 4
 
 Stage 4: IMPLEMENT
+  → TaskUpdate → in_progress
   → Invoke devops agent to create feature branch
   → Invoke developer agent to execute plan (TDD)
+  → TaskUpdate → completed
   → Auto-proceed to Stage 5
 
 Stage 5: TEST
+  → TaskUpdate → in_progress
   → Invoke qa agent to verify against acceptance criteria
   → Agent produces TEST.md
   → SOFT GATE: auto-proceed if pass, hard gate if fail
+  → TaskUpdate → completed
 
 Stage 6: REVIEW
+  → TaskUpdate → in_progress
   → Invoke reviewer agent for code review + security scan
   → Agent produces REVIEW.md
   → HARD GATE: Present review, ask user to approve merge
+  → TaskUpdate → completed
 
 Stage 7: MERGE
+  → TaskUpdate → in_progress
   → Invoke devops agent to squash merge + cleanup + retrospective
+  → TaskUpdate → completed
   → Pipeline complete
 ```
 
@@ -176,47 +288,64 @@ Stage 7: MERGE
 
 ```
 Stage 1: ANALYZE
+  → TaskUpdate → in_progress
   → Invoke architect agent
   → Agent produces ANALYSIS.md
   → HARD GATE: Present scope, ask user to confirm
+  → TaskUpdate → completed
 
 Stage 2: PLAN
+  → TaskUpdate → in_progress
   → Invoke architect agent
   → Agent produces PLAN.md
+  → TaskUpdate → completed
   → Auto-proceed to Stage 3
 
 Stage 3: EXECUTE
+  → TaskUpdate → in_progress
   → Invoke devops agent to create refactor branch
   → Invoke developer agent (green-to-green: tests must pass after every step)
+  → TaskUpdate → completed
   → Auto-proceed to Stage 4
 
 Stage 4: VERIFY
+  → TaskUpdate → in_progress
   → Invoke qa agent to verify behavior preservation
   → SOFT GATE: auto-proceed if all behavior contracts hold
+  → TaskUpdate → completed
 
 Stage 5: REVIEW
+  → TaskUpdate → in_progress
   → Invoke reviewer agent
   → Agent produces REVIEW.md
   → HARD GATE: Present review, ask user to approve merge
   → Invoke devops agent to merge + retrospective
+  → TaskUpdate → completed
 ```
 
 ### Plan Pipeline Flow
 
 ```
 Stage 1: GATHER
+  → TaskUpdate → in_progress
   → Invoke product-owner agent
   → Agent elicits requirements
   → HARD GATE: Confirm requirements
+  → TaskUpdate → completed
 
 Stage 2: DESIGN
+  → TaskUpdate → in_progress
   → Invoke architect agent
   → Agent explores options, proposes architecture
+  → Agent produces DESIGN.md (with Mermaid diagrams)
+  → TaskUpdate → completed
   → Auto-proceed to Stage 3
 
 Stage 3: DOCUMENT
+  → TaskUpdate → in_progress
   → Invoke architect agent
-  → Agent produces ADR.md
+  → Agent produces ADR.md (with Mermaid context diagram)
+  → TaskUpdate → completed
   → Pipeline complete (no code written)
 ```
 
@@ -224,15 +353,21 @@ Stage 3: DOCUMENT
 
 ```
 Stage 1: SCAN
+  → TaskUpdate → in_progress
   → Invoke reviewer agent to identify scope
+  → TaskUpdate → completed
   → Auto-proceed to Stage 2
 
 Stage 2: DEEP-REVIEW
+  → TaskUpdate → in_progress
   → Invoke reviewer agent with full checklist
+  → TaskUpdate → completed
   → Auto-proceed to Stage 3
 
 Stage 3: REPORT
+  → TaskUpdate → in_progress
   → Present findings to user
+  → TaskUpdate → completed
   → Pipeline complete (advisory only)
 ```
 
