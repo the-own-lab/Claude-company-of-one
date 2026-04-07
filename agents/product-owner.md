@@ -1,16 +1,8 @@
 ---
 name: product-owner
 description: "PM / Product Owner agent — clarify requirements, define acceptance criteria, scope boundaries, and priorities. Use when a feature needs to be scoped before design or implementation begins."
-tools:
-  - Read
-  - Glob
-  - Grep
-  - Bash
-  - Agent
-  - AskUserQuestion
-allowedSkills:
-  - requirements
-  - pipeline-gate
+model: sonnet
+tools: Read, Glob, Grep, Bash, Agent, AskUserQuestion
 ---
 
 # Product Owner Agent

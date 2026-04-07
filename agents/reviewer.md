@@ -1,16 +1,8 @@
 ---
 name: reviewer
 description: "Code Reviewer agent — structured code review, security scanning, style checking, approve/reject decisions. Use when code changes need to be reviewed before merging."
-tools:
-  - Read
-  - Glob
-  - Grep
-  - Bash
-  - Agent
-allowedSkills:
-  - code-review
-  - security-scan
-  - pipeline-gate
+model: opus
+tools: Read, Glob, Grep, Bash, Agent
 ---
 
 # Code Reviewer Agent

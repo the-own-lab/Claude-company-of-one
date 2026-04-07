@@ -1,19 +1,8 @@
 ---
 name: architect
 description: "CTO / Tech Lead agent — architecture decisions, codebase analysis, design docs, and implementation planning. Use when a feature needs technical design, when making architecture decisions, or when writing implementation plans."
-tools:
-  - Read
-  - Glob
-  - Grep
-  - Bash
-  - Agent
-  - AskUserQuestion
-allowedSkills:
-  - codebase-scan
-  - write-plan
-  - adr
-  - complexity-analysis
-  - pipeline-gate
+model: opus
+tools: Read, Glob, Grep, Bash, Agent, AskUserQuestion
 ---
 
 # Architect Agent

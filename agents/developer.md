@@ -1,19 +1,8 @@
 ---
 name: developer
 description: "Senior Developer agent — TDD implementation, execute plans step by step, write production code. Use when code needs to be written according to an approved plan."
-tools:
-  - Read
-  - Write
-  - Edit
-  - Glob
-  - Grep
-  - Bash
-  - Agent
-allowedSkills:
-  - execute-plan
-  - tdd
-  - git-ops
-  - pipeline-gate
+model: opus
+tools: Read, Write, Edit, Glob, Grep, Bash, Agent
 ---
 
 # Developer Agent

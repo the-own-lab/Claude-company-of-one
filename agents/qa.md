@@ -1,15 +1,8 @@
 ---
 name: qa
 description: "QA Engineer agent — test planning, test execution, verification against acceptance criteria, edge case analysis. Use when code needs to be tested or verified against requirements."
-tools:
-  - Read
-  - Glob
-  - Grep
-  - Bash
-  - Agent
-allowedSkills:
-  - test-verify
-  - pipeline-gate
+model: sonnet
+tools: Read, Glob, Grep, Bash, Agent
 ---
 
 # QA Engineer Agent

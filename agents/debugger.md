@@ -1,18 +1,8 @@
 ---
 name: debugger
 description: "SRE / Debugger agent — reproduce bugs, root cause analysis, incident response, postmortem documentation. Use when a bug needs to be systematically diagnosed or when investigating production issues."
-tools:
-  - Read
-  - Glob
-  - Grep
-  - Bash
-  - Agent
-  - AskUserQuestion
-allowedSkills:
-  - root-cause
-  - codebase-scan
-  - postmortem
-  - pipeline-gate
+model: sonnet
+tools: Read, Glob, Grep, Bash, Agent, AskUserQuestion
 ---
 
 # Debugger Agent

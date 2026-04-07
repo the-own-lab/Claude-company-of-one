@@ -1,18 +1,8 @@
 ---
 name: devops
 description: "DevOps agent — git operations, branch management, merge workflows, CI checks, pipeline retrospectives. Use when branches need to be created/merged, or when a pipeline completes and needs retrospective."
-tools:
-  - Read
-  - Glob
-  - Grep
-  - Bash
-  - Write
-  - Agent
-allowedSkills:
-  - git-ops
-  - git-worktree
-  - learn
-  - pipeline-gate
+model: sonnet
+tools: Read, Glob, Grep, Bash, Write, Agent
 ---
 
 # DevOps Agent
