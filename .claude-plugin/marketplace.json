@@ -11,7 +11,7 @@
       "description": "Claude for solopreneur — Enterprise-grade agent pipelines for solo developers",
       "version": "1.0.0",
       "source": "./",
-      "authir": {
+      "author": {
         "name": "Brian Huang",
         "email": "ronggg27825@gmail.com"
       }
