@@ -23,18 +23,44 @@ You coordinate a team of agents. Not a linear pipeline — a team working in par
 
 ---
 
+## State Management (Medium + Large)
+
+Pipeline state is managed by shell scripts — not prompt conventions.
+Call these via Bash tool at each transition:
+
+```bash
+# Initialize pipeline state
+bash hooks/scripts/lib/pipeline-state.sh init <pipeline> <feature> <size> <specs_dir> <wave_count>
+
+# Wave transitions
+bash hooks/scripts/lib/pipeline-state.sh wave-start <wave_num> <agent1> [agent2...]
+bash hooks/scripts/lib/pipeline-state.sh wave-complete <wave_num>
+
+# Gate decisions
+bash hooks/scripts/lib/pipeline-state.sh gate <gate_name> <approved|rejected>
+
+# Pipeline completion (runs all finalization: state + context + pattern index)
+bash hooks/scripts/pipeline-complete.sh
+```
+
+**CRITICAL: Call these scripts. Do not skip them. This is how state persists across sessions.**
+
+---
+
 ## Medium Flow (partial parallel)
 
-**1. Announce + TaskCreate:**
+**1. Initialize + TaskCreate:**
+```bash
+bash hooks/scripts/lib/pipeline-state.sh init develop {feature} medium "" 4
 ```
-[Medium] {type}: {description}
+```
 TaskCreate: "Brief Plan" / "Implement" / "Test & Review" / "Merge"
 ```
 
 **2. Brief Plan** — 3-5 bullets inline. User confirms (only gate).
 **3. Implement** — branch + TDD.
 **4. Test & Review** — run tests + quick review. 1 fix round max. Both inline.
-**5. Merge** — CHANGELOG + squash merge.
+**5. Merge** — CHANGELOG + squash merge + `bash hooks/scripts/pipeline-complete.sh`
 
 ---
 

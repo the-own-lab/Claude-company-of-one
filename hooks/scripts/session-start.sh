@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 # Session Start Hook — Claude 一人公司
 # Minimal context injection. Static rules stay in skill files.
+# Memory reads from index files, never scans directories.
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck source=hooks/scripts/lib/common.sh
 . "$SCRIPT_DIR/lib/common.sh"
+# shellcheck source=hooks/scripts/lib/pattern-index.sh
+. "$SCRIPT_DIR/lib/pattern-index.sh"
 
 PLUGIN_DATA="$(company_of_one_plugin_data)"
 MEMORY_DIR="$(company_of_one_memory_dir)"
@@ -22,35 +25,28 @@ Default to SMALL. Only upgrade when clearly needed.
 - Medium: inline plan + branch + TaskCreate 4 tasks.
 - Large: read orchestrator skill + pipeline reference. Agents work in parallel waves.
 Orchestrator skill has details — read it only for Medium/Large.
+State scripts: hooks/scripts/lib/pipeline-state.sh (init, wave-start, wave-complete, gate, complete)
 </company-of-one>
 CONTEXT
 
-# ── Pipeline State (only if resuming) ────────────────────────
+# ── Pipeline State (only if active/resuming) ─────────────────
 if [ -f "$PLUGIN_DATA/pipeline-state.json" ]; then
-  echo ""
-  echo "<pipeline-resume>"
-  cat "$PLUGIN_DATA/pipeline-state.json"
-  echo "</pipeline-resume>"
+  local_status=$(python3 -c "import json; print(json.load(open('$PLUGIN_DATA/pipeline-state.json')).get('status',''))" 2>/dev/null || echo "")
+  if [ "$local_status" = "active" ]; then
+    echo ""
+    echo "<pipeline-resume>"
+    cat "$PLUGIN_DATA/pipeline-state.json"
+    echo "</pipeline-resume>"
+  fi
 fi
 
-# ── Memory Index (1-line summaries only) ─────────────────────
-PATTERN_COUNT=0
-for pattern_file in "$MEMORY_DIR/patterns"/*.md; do
-  [ -f "$pattern_file" ] || continue
-  confidence=$(grep -m1 "^confidence:" "$pattern_file" 2>/dev/null | awk '{print $2}' || echo "0")
-  confidence_int=$(echo "$confidence" | awk '{printf "%d", $1 * 10}')
-  if [ "$confidence_int" -ge 7 ]; then
-    if [ "$PATTERN_COUNT" -eq 0 ]; then
-      echo ""
-      echo "<memory-index>"
-    fi
-    # Extract just the pattern title (first heading after frontmatter)
-    pattern_id=$(grep -m1 "^id:" "$pattern_file" 2>/dev/null | awk '{print $2}' || echo "?")
-    pattern_title=$(sed -n '/^---$/,/^---$/d;/^# /p' "$pattern_file" | head -1 | sed 's/^# //')
-    echo "- ${pattern_id} (${confidence}): ${pattern_title}"
-    PATTERN_COUNT=$((PATTERN_COUNT + 1))
-  fi
-done
-if [ "$PATTERN_COUNT" -gt 0 ]; then
-  echo "</memory-index>"
+# ── Memory: Pattern Index (reads index file, not pattern directory) ──
+pattern_index_read_high_confidence
+
+# ── Memory: Project Context (max 30 lines) ───────────────────
+if [ -f "$MEMORY_DIR/project-context.md" ]; then
+  echo ""
+  echo "<project-context>"
+  head -30 "$MEMORY_DIR/project-context.md"
+  echo "</project-context>"
 fi
