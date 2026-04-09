@@ -56,7 +56,7 @@ For each pending pattern suggestion:
 
 ## Pattern File Format
 
-Patterns are stored in `${COMPANY_OF_ONE_PLUGIN_DATA}/memory/patterns/`:
+Patterns are stored in `${COMPANY_OF_ONE_PLUGIN_DATA}/projects/{project-key}/patterns/`:
 
 ```markdown
 ---

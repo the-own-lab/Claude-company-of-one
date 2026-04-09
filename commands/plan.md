@@ -24,7 +24,7 @@ This pipeline produces design documents and ADRs — no code is written.
 Invoke the **product-owner** agent to gather and structure requirements.
 
 **Input**: User's planning request
-**Output**: `REQUIREMENTS.md` in the specs directory
+**Output**: Update `briefs/current.json` field `requirements`
 
 The product-owner agent will:
 - Understand what the user wants to plan
@@ -54,8 +54,8 @@ DO NOT proceed to Stage 2 until the user explicitly approves.
 
 Invoke the **architect** agent to explore options and design the solution.
 
-**Input**: Approved requirements + existing codebase
-**Output**: `DESIGN.md` in the specs directory
+**Input**: `briefs/current.json` (requirements) + existing codebase
+**Output**: Update `briefs/current.json` fields `design` + `decisions`
 
 The architect agent will:
 - Scan the codebase to understand current architecture
@@ -71,7 +71,7 @@ Auto-proceed to Stage 3.
 
 Invoke the **architect** agent to produce formal documentation.
 
-**Output**: `ADR.md` (Architecture Decision Record) in the specs directory
+**Output**: `ADR.md` in `docs/adr/` (the only artifact that goes into the project repo)
 
 ```markdown
 # ADR-{number}: {title}
@@ -115,11 +115,6 @@ Proposed
 "**✓ /plan pipeline complete**
 
 Topic: {planning topic}
-Specs: `{specsDir}/{date}-plan-{topic}/`
+ADR: `docs/adr/ADR-{NNN}.md` (git-tracked)
 
-Artifacts produced:
-- REQUIREMENTS.md
-- DESIGN.md
-- ADR.md
-
-These documents can be used as input to `/develop` when you're ready to implement."
+Brief archived. Run `/develop` when you're ready to implement."

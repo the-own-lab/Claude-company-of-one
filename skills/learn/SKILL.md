@@ -66,20 +66,22 @@ A pattern at 0.3 is a tentative observation. A pattern at 0.7+ is well-establish
 
 ## Memory Structure
 
-Pattern and context data is stored in:
+Pattern and context data is stored per-project:
 
 ```
-${COMPANY_OF_ONE_PLUGIN_DATA}/memory/
-  patterns/       # Extracted patterns with confidence scores
-  context/        # Project-specific context (tech stack, conventions)
-  sessions/       # Per-session state for continuity
+${COMPANY_OF_ONE_PLUGIN_DATA}/projects/{project-key}/
+  pipeline.json    # Flow control (stage, status, timestamps)
+  context.md       # Project knowledge (tech stack, conventions)
+  patterns/        # Extracted patterns with confidence scores
+    index.json     # Pattern index (session-start reads only this)
+  briefs/          # Agent handoff (current.json + history/)
 ```
 
 ## Session Hooks Integration
 
-- **SessionStart** — Load high-confidence patterns (0.5+) into active context
-- **PreCompact** — Save current session state before context compaction
-- **PostCompact** — Restore essential state after context compaction
+- **SessionStart** — Load high-confidence patterns (≥0.7) + active brief + project context
+- **PreCompact** — Ensure pipeline state is persisted
+- **PostCompact** — Restore pipeline state, active brief, patterns, and context
 
 ## Guard Rails
 
