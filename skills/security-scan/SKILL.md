@@ -48,6 +48,23 @@ Analyze code changes for security vulnerabilities across multiple categories.
 | Medium | Potential risk requiring specific conditions |
 | Low | Best practice violation, minimal direct risk |
 
+### Input Validation
+- Validate ALL external input at system boundaries
+- Whitelist valid input rather than blacklisting invalid
+- Sanitize before use in interpreted contexts (SQL, HTML, shell)
+
+### Cryptography
+- Never implement custom crypto — use established libraries
+- Hash passwords with bcrypt, scrypt, or argon2 (never MD5/SHA)
+- Use HTTPS for all external communication
+- Encrypt sensitive data at rest
+
+### File Operations
+- Validate file paths against traversal attacks
+- Check file sizes before processing (prevent DoS)
+- Validate file types (don't trust extensions alone)
+- Use temp directories for ephemeral files; clean up after use
+
 ## Report Format
 
 For each finding, provide:

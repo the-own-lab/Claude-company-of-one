@@ -69,9 +69,16 @@ Once the root cause is identified, assess the full impact:
 - Determine if the same class of error could occur elsewhere
 - Quantify the scope: how many users, features, or data paths are affected
 
+## Template
+
+Read the template before producing the diagnosis:
+```
+Read ${CLAUDE_PLUGIN_ROOT}/templates/DIAGNOSIS.md
+```
+
 ## Output
 
-Produce a structured `DIAGNOSIS.md` containing:
+Produce a structured `DIAGNOSIS.md` following the template above, containing:
 
 1. **Root Cause** — Clear, concise statement of why the bug occurs
 2. **Evidence** — Specific logs, traces, or code that prove the root cause

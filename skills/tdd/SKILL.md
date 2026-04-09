@@ -38,3 +38,24 @@ Every code change follows the TDD cycle. No exceptions.
   - **Arrange** — Set up the preconditions.
   - **Act** — Perform the action being tested.
   - **Assert** — Verify the expected outcome.
+
+## What to Test
+
+- Happy path (expected inputs → expected outputs)
+- Edge cases (empty, null, boundary values, max size)
+- Error paths (invalid inputs → appropriate errors)
+- Integration points (API calls, database queries, file I/O)
+
+## What NOT to Test
+
+- Private implementation details (test through the public API)
+- Third-party library internals
+- Trivial getters/setters with no logic
+- Framework boilerplate
+
+## Mocking
+
+- Mock external services (APIs, databases, file systems)
+- Do NOT mock internal logic — test the real code
+- Prefer fakes over mocks when possible (in-memory DB > mock DB)
+- Keep mocks minimal — only mock what you must

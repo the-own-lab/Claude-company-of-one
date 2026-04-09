@@ -58,6 +58,13 @@ State the decision clearly and concisely. Use active voice:
 | Option A | ... | ... | ... |
 | Option B | ... | ... | ... |
 
+## Template
+
+Read the template before producing the ADR (includes Mermaid diagrams):
+```
+Read ${CLAUDE_PLUGIN_ROOT}/templates/ADR.md
+```
+
 ## Numbering
 
 ADRs are numbered sequentially: `ADR-001`, `ADR-002`, etc. Numbers are never reused. If a decision is superseded, the original ADR is updated with a status change pointing to the new ADR.

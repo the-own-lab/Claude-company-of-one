@@ -43,6 +43,13 @@ Structured code review with a consistent checklist.
 - **Always explain WHY something is an issue.** "This is bad" is not a review comment. "This swallows the database error, so failures will be silent and hard to debug" is.
 - **Always acknowledge what went well.** Good code review is not just finding problems. Call out clean design, good test coverage, or thoughtful error handling.
 
+## Template
+
+Read the template before producing the review report:
+```
+Read ${CLAUDE_PLUGIN_ROOT}/templates/REVIEW.md
+```
+
 ## Verdict
 
 - **APPROVED** — Code is ready to merge. No critical or warning issues remain.

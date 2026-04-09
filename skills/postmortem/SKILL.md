@@ -55,6 +55,13 @@ Concrete preventive measures to reduce the likelihood of recurrence:
 - Assign an owner or note if the item is for the next pipeline run
 - Prioritize by impact: what prevents the most similar bugs
 
+## Template
+
+Read the template before producing the postmortem:
+```
+Read ${CLAUDE_PLUGIN_ROOT}/templates/POSTMORTEM.md
+```
+
 ## Tone
 
 - **Blameless** — focus on systems and processes, not individuals

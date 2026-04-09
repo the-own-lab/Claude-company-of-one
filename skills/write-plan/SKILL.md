@@ -32,6 +32,12 @@ Each step should take **2-5 minutes** to execute. If a step feels larger, break 
 
 Steps must be ordered by dependency. No step should reference code that has not yet been created by a prior step. Draw the dependency graph mentally before writing the sequence.
 
+## Templates
+
+Read the relevant template before producing output:
+- Implementation plan: `Read ${CLAUDE_PLUGIN_ROOT}/templates/PLAN.md`
+- Design document: `Read ${CLAUDE_PLUGIN_ROOT}/templates/DESIGN.md`
+
 ## Prerequisites Section
 
 Every plan starts with a prerequisites section listing:

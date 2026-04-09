@@ -58,3 +58,5 @@ Rules:
 - **Always** review the diff before committing
 - **Never** commit files containing secrets or credentials
 - Prefer creating new commits over amending existing ones
+- Review `.gitignore` when adding new file types
+- Tag releases with semantic versioning (vX.Y.Z)

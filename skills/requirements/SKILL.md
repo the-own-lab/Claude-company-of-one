@@ -38,6 +38,13 @@ Technical, business, or timeline constraints that affect implementation choices.
 ### Open Questions
 Unresolved items that need answers before or during implementation.
 
+## Template
+
+Read the template before producing output:
+```
+Read ${CLAUDE_PLUGIN_ROOT}/templates/REQUIREMENTS.md
+```
+
 ## Quality Checks
 
 Before finalizing a requirements document, verify:

@@ -14,13 +14,11 @@ It provides enterprise-grade agent pipelines for solo developers.
 
 ```
 .claude-plugin/          → Claude Code plugin manifest
-plugins/                 → Codex plugin wrapper (symlinks to shared assets)
-agents/                  → Agent definitions (shared)
-commands/                → Slash commands (shared)
-skills/                  → Skills with SKILL.md (shared)
-rules/                   → Coding standards (shared)
-hooks/                   → Hook scripts (shared)
-templates/               → Document templates (shared)
+agents/                  → Agent definitions
+commands/                → Slash commands
+skills/                  → Skills with SKILL.md (each skill references its template)
+hooks/                   → Hook scripts
+templates/               → Document templates (referenced by skills, not standalone)
 ```
 
 ## Conventions
@@ -36,6 +34,15 @@ templates/               → Document templates (shared)
 - **Small**: single file, clear, <2 min → just do it, no docs
 - **Medium**: 2-5 files, 5-15 min → inline plan, feature branch
 - **Large**: cross-module, >15 min → full pipeline with specs directory
+
+## Code Style
+
+- Functions do one thing, under 50 lines; split if longer
+- Early returns over nested conditionals; max 3 nesting levels
+- No dead code, no commented-out code, no unused imports
+- Comments explain WHY, never WHAT
+- Error messages are actionable (what went wrong + what to do)
+- YAGNI — don't build what you don't need yet
 
 ## Do NOT
 

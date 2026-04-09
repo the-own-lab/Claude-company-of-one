@@ -44,6 +44,13 @@ Keep the project knowledge base current:
 - Convention changes (coding style, naming, file structure)
 - Key decisions made (link to ADRs where applicable)
 
+## Retrospective Template
+
+Read the template before producing the retrospective:
+```
+Read ${CLAUDE_PLUGIN_ROOT}/templates/RETRO.md
+```
+
 ## Pattern Confidence Scoring
 
 Patterns earn confidence through repeated observation:
