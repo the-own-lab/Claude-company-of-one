@@ -1,13 +1,13 @@
 ---
 name: orchestrator
-description: 'Company of One orchestrator. Read this skill ONLY when a user message implies work (bug, feature, refactor, plan, review) AND the task is Medium or Large. Do NOT read for questions, explanations, or Small tasks.'
+description: 'Company of One v2 orchestrator. Read this skill ONLY when a user message implies work (bug, feature, refactor, plan, ship) AND the task is Medium or Large. Do NOT read for questions, explanations, or Small tasks.'
 disable-model-invocation: false
 user-invocable: false
 ---
 
-# Orchestrator — Team Coordinator
+# Orchestrator — Skills-First Router
 
-You coordinate a team of agents. Not a linear pipeline — a team working in parallel.
+You coordinate work through **skills**, not agents. Only two agents exist: `reviewer` (fresh eyes for code review) and `debugger` (isolated root cause analysis). Everything else is a skill chain.
 
 **Default to Small.** Only upgrade when clearly needed.
 
@@ -15,101 +15,111 @@ You coordinate a team of agents. Not a linear pipeline — a team working in par
 
 ## Sizing → Execution Model
 
-| Size       | Execution                       | Agents                                       |
-| ---------- | ------------------------------- | -------------------------------------------- |
-| **Small**  | Just do it. No team.            | You alone.                                   |
-| **Medium** | Partial parallel. 2-3 agents.   | Brief plan → implement → test+review → merge |
-| **Large**  | Full team. Wave-based parallel. | Read pipeline reference for wave details.    |
+| Size       | Execution                           | Agents used                                                  |
+| ---------- | ----------------------------------- | ------------------------------------------------------------ |
+| **Small**  | Just do it. No skills, no agents.   | None                                                         |
+| **Medium** | Skill chain; `reviewer` at the end. | `reviewer` (once)                                            |
+| **Large**  | Full skill chain with 2 hard gates. | `reviewer` (once), maybe `debugger` if bug surfaces mid-flow |
+
+No more "waves of parallel agents." The only parallelism left is: `reviewer` can run while final tests execute.
 
 ---
 
 ## State Management (Medium + Large)
 
-Pipeline state is managed by shell scripts — not prompt conventions.
-Call these via Bash tool at each transition:
+Pipeline state is managed by shell scripts. Call via Bash at each transition:
 
 ```bash
-# Initialize pipeline state
 bash hooks/scripts/lib/pipeline-state.sh init <pipeline> <feature> <size> <wave_count>
-
-# Wave transitions
-bash hooks/scripts/lib/pipeline-state.sh wave-start <wave_num> <agent1> [agent2...]
+bash hooks/scripts/lib/pipeline-state.sh wave-start <wave_num> <step_name>
 bash hooks/scripts/lib/pipeline-state.sh wave-complete <wave_num>
-
-# Gate decisions
 bash hooks/scripts/lib/pipeline-state.sh gate <gate_name> <approved|rejected>
 
-# Brief management (agent handoff — single source of truth)
 bash hooks/scripts/lib/brief-manager.sh init <pipeline> <feature> <size>
 bash hooks/scripts/lib/brief-manager.sh update <field> <value>
 bash hooks/scripts/lib/brief-manager.sh read
 
-# Pipeline completion (runs all finalization: state + brief archive + context + pattern index)
 bash hooks/scripts/pipeline-complete.sh
 ```
 
-**CRITICAL: Call these scripts. Do not skip them. This is how state persists across sessions.**
+(v1's `wave-start` took agent names; v2 takes step names, e.g. `design-doc`, `tdd`, `review`. The script signature is unchanged — only the semantic meaning of the args changed.)
 
 ---
 
-## Medium Flow (partial parallel)
+## Skill Chains
 
-**1. Initialize + TaskCreate:**
-
-```bash
-bash hooks/scripts/lib/pipeline-state.sh init develop {feature} medium 4
-bash hooks/scripts/lib/brief-manager.sh init develop {feature} medium
-```
+### Medium (/ship on a 2–5 file task)
 
 ```
-TaskCreate: "Brief Plan" / "Implement" / "Test & Review" / "Merge"
+requirements → success-metric → design-doc (inline)
+  → git-ops (branch) → test-plan → tdd
+  → [reviewer agent] → release-checklist → git-ops (merge)
+  → pipeline-complete.sh
 ```
 
-**2. Brief Plan** — 3-5 bullets inline. User confirms (only gate).
-**3. Implement** — branch + TDD.
-**4. Test & Review** — run tests + quick review. 1 fix round max. Both inline.
-**5. Merge** — CHANGELOG + squash merge + `bash hooks/scripts/pipeline-complete.sh`
+Only ONE hard gate (user confirms clarified requirements). `reviewer` agent spawns once.
+
+### Large (/ship on cross-module feature)
+
+```
+requirements → success-metric → design-doc → [wireframe if UI]
+  → [HARD GATE: design approval]
+  → write-plan
+  → git-ops (branch) → execute-plan (with tdd) → test-verify
+  → [reviewer agent]
+  → [HARD GATE: review approval]
+  → release-checklist → git-ops (merge) → pipeline-complete.sh
+```
+
+Two hard gates: design, review. No other mandatory gates.
+
+### Debug (/debug)
+
+```
+[debugger agent: reproduce + diagnose]
+  → [HARD GATE: diagnosis approval]
+  → git-ops (fix branch) → tdd (regression test first) → test-verify
+  → postmortem (default; skip only for trivial bugs)
+  → release-checklist → git-ops (merge)
+```
+
+One agent spawn (`debugger`). Everything else skills.
+
+### Weekly Ritual (/ship-weekly)
+
+```
+weekly-ship → [optional: changelog-launch-post]
+```
+
+No agents. Pure skill.
 
 ---
 
-## Large Flow (full team, wave-based)
+## UI Detection
 
-Read the appropriate pipeline reference:
+Signals: frontend, UI, UX, layout, page, screen, component, button, form, modal, theme, dark mode, responsive, CSS, style, visual.
 
-- Develop → `${CLAUDE_SKILL_DIR}/references/pipeline-develop.md`
-- Debug → `${CLAUDE_SKILL_DIR}/references/pipeline-debug.md`
-- Refactor → `${CLAUDE_SKILL_DIR}/references/pipeline-refactor.md`
-- Plan → `${CLAUDE_SKILL_DIR}/references/pipeline-plan.md`
-- Review → `${CLAUDE_SKILL_DIR}/references/pipeline-review.md`
-
-### Key principle: WAVES, not stages
-
-```
-Wave = a set of agents working in PARALLEL
-Sync = wait for all agents in the wave to finish
-Gate = wait for USER approval (max 2 per pipeline)
-```
-
-Launch parallel agents using multiple Agent tool calls in the SAME message.
-After a wave completes, start the next wave immediately (unless there's a gate).
-
-### Max 2 hard gates for Large:
-
-1. **Design approval** — before implementation starts
-2. **Review approval** — before merge
-
----
-
-## UI Detection (Large only)
-
-Signals: frontend, UI, UX, layout, page, screen, component, button, form, modal, theme, dark mode, responsive, CSS, style, visual
-
-If detected → add ui-designer to Wave 2 (parallel with architect + QA).
+If detected → insert `wireframe` skill after `design-doc`.
 
 ---
 
 ## Review-Fix Loop
 
-- Medium: 1 round, inline
-- Large: 2 rounds max, reviewer → developer auto-fix → reviewer re-verify
-- Critical issues always go to user
+- Medium: 1 round, inline after `reviewer` returns
+- Large: 2 rounds max, user intervenes if reviewer-fix cycle exceeds 2
+- Critical issues always surface to user regardless of size
+
+---
+
+## What Changed From v1
+
+- v1 had 8 agents and "waves"; v2 has 2 agents and skill chains
+- v1 spawned agents for planning, dev, QA, devops — v2 uses skills for those roles
+- v1's `/develop`, `/review`, `/refactor`, `/plan` are now `/ship` + sizing logic
+- Philosophy: **institutions replace teammates** — rituals and skills do what fake coworkers used to pretend to do
+
+---
+
+## Reference pipelines
+
+For Large flows, see `${CLAUDE_SKILL_DIR}/references/pipeline-develop.md` (covers ship/refactor/plan — they share a skeleton now) and `${CLAUDE_SKILL_DIR}/references/pipeline-debug.md`.

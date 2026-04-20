@@ -1,238 +1,162 @@
-# Develop Pipeline — Agent Team Model
+# Ship Pipeline — Large (Skills-First)
+
+The Large `/ship` flow. Medium is a compressed inline version of the same chain — see `orchestrator/SKILL.md`.
 
 ## Task Creation
 
-At pipeline start, create ALL tasks:
+At pipeline start, create all tasks:
 
 ```
-TaskCreate: "Wave 1: Requirements + Branch Setup"
-TaskCreate: "Wave 2: Design + Test Plan"
-TaskCreate: "Wave 3: Implementation Plan + Scaffold"
-TaskCreate: "Wave 4: Implement (TDD)"
-TaskCreate: "Wave 5: Verify + Review"
-TaskCreate: "Wave 6: Merge + Ship"
+TaskCreate: "Clarify requirements + success metric"
+TaskCreate: "Design + wireframe (if UI)"
+TaskCreate: "Write implementation plan"
+TaskCreate: "Implement (TDD)"
+TaskCreate: "Review"
+TaskCreate: "Merge + retro"
 ```
 
-Initialize brief: `bash hooks/scripts/lib/brief-manager.sh init develop {feature} large`
+Initialize state:
+
+```bash
+bash hooks/scripts/lib/pipeline-state.sh init ship {feature} large 6
+bash hooks/scripts/lib/brief-manager.sh init ship {feature} large
+```
 
 ---
 
-## Wave 1: Requirements + Branch Setup
+## Step 1: Requirements + Success Metric
 
-**Agents: product-owner + devops (PARALLEL)**
+Skills: `requirements`, `success-metric`
 
-Launch both agents in the SAME message:
+- Produce `REQUIREMENTS.md` in `${COMPANY_OF_ONE_PLUGIN_DATA}/projects/{key}/specs/{date}-{slug}/`
+- Add a single-line success metric (from `success-metric` skill)
+- Update brief:
+  ```
+  bash hooks/scripts/lib/brief-manager.sh update requirements '{1-3 sentence summary}'
+  bash hooks/scripts/lib/brief-manager.sh update success_metric '{one line}'
+  ```
 
-```
-Agent(product-owner):
-  "Clarify requirements for: {user's request}
-   Ask questions ONE AT A TIME.
-   Update brief: bash hooks/scripts/lib/brief-manager.sh update requirements '{1-3 sentence summary}'
-   Include acceptance criteria, scope, constraints."
-
-Agent(devops):
-  "Create feature branch: feature/{slug}
-   Set up for development."
-```
-
-**Sync 1**: Wait for both agents to complete.
-TaskUpdate → completed.
+No agent. Ask clarifying questions one at a time if ambiguous.
 
 ---
 
-## Wave 2: Design + Test Plan
+## Step 2: Design (+ Wireframe if UI)
 
-**Agents: architect + qa (PARALLEL) + ui-designer (conditional)**
+Skills: `design-doc`, `wireframe` (conditional)
 
-Launch in the SAME message:
+- Produce `DESIGN.md` with 5 sections: Problem, Solution, **Non-Goals**, **Alternatives Considered**, Open Questions
+- If UI detected → invoke `wireframe` skill and embed sketch into DESIGN.md
+- Add decisions inline (or invoke `decide` skill for notable ones)
+- Update brief: `brief-manager.sh update design '{approach summary}'`
 
-```
-Agent(architect):
-  "Read brief: bash hooks/scripts/lib/brief-manager.sh read
-   Scan codebase for existing patterns.
-   Update brief: bash hooks/scripts/lib/brief-manager.sh update design '{approach summary}'
-   Add decisions: bash hooks/scripts/lib/brief-manager.sh add-decision '{decision}'"
+### HARD GATE 1 — Design approval
 
-Agent(qa):
-  "Read brief: bash hooks/scripts/lib/brief-manager.sh read
-   Write a test plan from the acceptance criteria.
-   List test cases, edge cases, and verification strategy.
-   Output inline (no standalone file)."
-
-Agent(ui-designer):  ← ONLY if UI detected
-  "Read brief: bash hooks/scripts/lib/brief-manager.sh read
-   Create UI wireframes for the frontend components."
-```
-
-**Sync 2**: Wait for all agents.
-
-**HARD GATE 1**: Present design summary to user.
+Present to user:
 
 ```
 Design ready. Key decisions:
 - {decision 1}
 - {decision 2}
-Architecture: {1-line summary}
+Non-goals: {one line}
+Approach: {1-line summary}
+
 Reply 'approved' to proceed, or provide feedback.
 ```
 
-TaskUpdate → completed.
+Do not proceed without approval.
 
 ---
 
-## Wave 3: Plan + Scaffold
+## Step 3: Implementation Plan
 
-**Agents: architect + developer (PARALLEL)**
+Skill: `write-plan`
 
-```
-Agent(architect):
-  "Read brief: bash hooks/scripts/lib/brief-manager.sh read
-   Write implementation plan with file-level steps.
-   Update brief: bash hooks/scripts/lib/brief-manager.sh update plan '{step summary}'
-   Each step: exact files, signatures, verification criteria."
-
-Agent(developer):
-  "Read brief: bash hooks/scripts/lib/brief-manager.sh read
-   On branch feature/{slug}:
-   Create initial project scaffolding based on the architecture.
-   Set up file structure, interfaces, types — no implementation yet.
-   Commit: 'chore: scaffold for {feature}'"
-```
-
-**Sync 3**: Wait for both.
-TaskUpdate → completed.
+- Produce `PLAN.md` with file-level steps; each step names exact files, signatures, verification criteria
+- Keep the steps small enough that each maps to one commit
+- Update brief: `brief-manager.sh update plan '{step count + summary}'`
 
 ---
 
-## Wave 4: Implement
+## Step 4: Implement
 
-**Agent: developer (primary), architect available for questions**
+Skills: `git-ops`, `execute-plan`, `tdd`, `test-plan`
 
-```
-Agent(developer):
-  "Read brief: bash hooks/scripts/lib/brief-manager.sh read
-   On branch feature/{slug}:
-   Implement each step with TDD (RED → GREEN → REFACTOR).
-   Incremental commits per logical change.
-   If unclear about a design decision, read the brief first.
-   If still unclear, flag it — do not guess."
-```
-
-This wave is primarily sequential (developer works through the plan).
-
-TaskUpdate → completed.
+- Create branch via `git-ops`: `feature/{slug}`
+- Invoke `test-plan` skill → golden/edge/error/won't-test lists
+- Invoke `execute-plan` + `tdd`: RED → GREEN → REFACTOR per step
+- Commit incrementally with conventional-commit messages
+- If a bug surfaces mid-flow that needs real root-cause work, you MAY spawn the `debugger` agent — otherwise stay skill-only
 
 ---
 
-## Wave 5: Verify + Review
+## Step 5: Review
 
-**Agents: qa + reviewer (PARALLEL)**
+Agent: `reviewer` (spawned once)
 
-Launch both in the SAME message:
+Run `reviewer` in parallel with any remaining test-verify work (the only parallelism left in v2):
 
 ```
-Agent(qa):
-  "On branch feature/{slug}:
-   Run full test suite.
-   Verify each acceptance criterion from the brief.
-   Test edge cases from the test plan.
-   Update brief: bash hooks/scripts/lib/brief-manager.sh update test_results '{pass/fail summary}'"
-
 Agent(reviewer):
   "On branch feature/{slug}:
-   Review all changes (git diff against target branch).
-   Check: logic, security, maintainability, tests.
+   Review all changes (git diff against target).
+   Check: logic, security, maintainability, test coverage.
    Update brief: bash hooks/scripts/lib/brief-manager.sh update review_verdict '{verdict + issue count}'
    Verdict: APPROVED / CHANGES REQUESTED / REJECTED."
 ```
 
-**Sync 5**: Wait for both.
+### Review-fix loop
 
-### Review-Fix Loop (if needed)
+- Warnings only → fix directly (no developer agent) → re-invoke `reviewer`
+- Max 2 rounds
+- Critical issues → HARD GATE to user
 
-```
-If review has warnings only:
-  → Agent(developer): "Fix these warnings: {list}. On branch feature/{slug}."
-  → Agent(reviewer): "Re-review the fixes on feature/{slug}."
-  → Max 2 rounds.
-
-If critical issues:
-  → HARD GATE: present to user.
-```
-
-**HARD GATE 2**: Present results to user.
+### HARD GATE 2 — Review approval
 
 ```
-QA: {pass/fail summary}
+Tests: {pass/fail summary}
 Review: {verdict} — {N issues}
+
 Reply 'merge' to ship, 'fix' to address issues, or 'abort'.
 ```
 
-TaskUpdate → completed.
-
 ---
 
-## Wave 6: Merge + Ship
+## Step 6: Merge + Retro
 
-**Agent: devops**
+Skills: `release-checklist`, `git-ops`
 
-```
-Agent(devops):
-  "On branch feature/{slug}:
-   1. Final test verification
-   2. Update CHANGELOG.md (Keep a Changelog format, under ### Added)
-   3. Squash merge to {target branch}
-   4. Delete feature branch
-   5. Run: bash hooks/scripts/pipeline-complete.sh"
-```
+1. Run `release-checklist` (pre-merge section)
+2. Update `CHANGELOG.md` (Keep a Changelog format, under `## [Unreleased]`)
+3. `git-ops` squash-merge to target branch; delete feature branch
+4. `bash hooks/scripts/pipeline-complete.sh`
 
-TaskUpdate → completed.
+Optionally: pipe the changelog entry through `changelog-launch-post` skill to draft launch copy.
 
 ---
 
 ## Dependency Graph
 
 ```
-Wave 1: PM ──────┐
-         DevOps ──┤
-                  │
-         Sync 1 ──┤
-                  │
-Wave 2: Architect ┤
-         QA ──────┤
-         UI? ─────┤
-                  │
-         Sync 2 ──→ GATE 1 (design approval)
-                  │
-Wave 3: Architect ┤
-         Developer┤
-                  │
-         Sync 3 ──┤
-                  │
-Wave 4: Developer ┤
-                  │
-         Sync 4 ──┤
-                  │
-Wave 5: QA ───────┤
-         Reviewer ┤
-                  │
-         Sync 5 ──→ GATE 2 (merge approval)
-                  │
-Wave 6: DevOps ───┘
+Step 1 (requirements + metric)
+   ↓
+Step 2 (design + wireframe?)
+   ↓
+   GATE 1 (design approval)
+   ↓
+Step 3 (plan)
+   ↓
+Step 4 (implement, TDD)
+   ↓
+Step 5 (reviewer agent) — parallel with final test-verify
+   ↓
+   GATE 2 (review approval)
+   ↓
+Step 6 (merge + retro)
 ```
 
-## Parallel Agent Invocation
+## What Changed From v1
 
-CRITICAL: To achieve parallelism, you MUST launch agents in the SAME message.
-Claude Code executes multiple Agent tool calls from a single message concurrently.
-
-```
-// CORRECT — parallel
-Message contains: Agent(architect, ...) AND Agent(qa, ...)
-→ Both run at the same time
-
-// WRONG — sequential
-Message 1: Agent(architect, ...)
-Message 2: Agent(qa, ...)
-→ Runs one after the other
-```
+- 6 agents → 1 agent (reviewer only)
+- "Waves of parallel agents" → linear skill chain with one parallel edge (reviewer + final tests)
+- Agent personas (product-owner, architect, developer, qa, devops, ui-designer) → skills of the same role
+- Gates unchanged (design approval, review approval)

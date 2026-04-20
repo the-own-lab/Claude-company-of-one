@@ -1,69 +1,88 @@
-# Debug Pipeline — Full Orchestration Flow
+# Debug Pipeline — Skills-First
+
+One agent (`debugger`) for reproduce + diagnose. Everything else is skills.
 
 ## Task Creation (at pipeline start)
 
 ```
-TaskCreate: "Stage 1/5: Reproduce (debugger)"
-TaskCreate: "Stage 2/5: Diagnose (debugger)"
-TaskCreate: "Stage 3/5: Fix (developer)"
-TaskCreate: "Stage 4/5: Verify (qa)"
-TaskCreate: "Stage 5/5: Document (devops)"
+TaskCreate: "Reproduce + Diagnose (debugger agent)"
+TaskCreate: "Fix (TDD)"
+TaskCreate: "Verify"
+TaskCreate: "Postmortem + Merge"
 ```
 
 ---
 
-## Stage 1: REPRODUCE
+## Step 1: Reproduce + Diagnose
 
-- **Agent**: debugger
-- **Action**: Gather info, create minimal reproduction, define "fixed" criteria
-- **Output**: `REPRODUCE.md`
-- **Gate**: Auto-proceed
+- **Agent**: `debugger` (spawned once, isolated context)
+- **Action**: Reproduce the bug, trace, hypothesize, verify root cause, identify blast radius, recommend fix
+- **Output**: `DIAGNOSIS.md` in `${COMPANY_OF_ONE_PLUGIN_DATA}/projects/{key}/specs/{date}-fix-{slug}/`
+- **Brief**: `brief-manager.sh update diagnosis '{root cause 1-liner}'`
+- **Gate**: HARD — user must confirm diagnosis before code changes
+
+Present to user:
+
+```
+Diagnosis complete.
+Root cause: {1-sentence}
+Blast radius: {affected areas}
+Recommended fix: {1-sentence}
+
+Reply 'approved' to proceed, or provide alternative direction.
+```
 
 ---
 
-## Stage 2: DIAGNOSE
+## Step 2: Fix
 
-- **Agent**: debugger
-- **Action**: Root cause analysis — hypothesis, trace, verify, identify blast radius
-- **Output**: `DIAGNOSIS.md`
-- **Gate**: HARD GATE — user must confirm diagnosis before code changes
-
----
-
-## Stage 3: FIX
-
-- **Agent**: devops → developer
+- **Skills**: `git-ops`, `tdd`
 - **Action**:
-  1. devops creates fix branch: `fix/{slug}`
-  2. developer writes failing test (reproduces bug) → implements minimal fix → refactors
-  3. Commit: `fix({scope}): {description}`
-- **Output**: Bug fix with regression test
-- **Gate**: Auto-proceed
+  1. `git-ops` → create branch `fix/{slug}`
+  2. `tdd` → failing regression test first (RED) → minimum fix (GREEN) → refactor
+- **Commit**: `fix({scope}): {description}`
+- **No agent spawn.**
 
 ---
 
-## Stage 4: VERIFY
+## Step 3: Verify
 
-- **Agent**: qa
-- **Action**: Confirm original reproduction passes, run full test suite, check blast radius
-- **Output**: `VERIFY.md`
-- **Gate**: SOFT GATE
-  - All verifications pass → auto-proceed
-  - Failure → HARD GATE (user decides: rediagnose / fix again / abort)
+- **Skill**: `test-verify`
+- **Action**: Confirm original repro now passes, full suite green, blast-radius tests green
+- **Output**: Inline verification summary; brief update
+- **Gate**: SOFT — on failure, user decides:
+  - `rediagnose` → return to Step 1
+  - `fix` → return to Step 2
+  - `abort` → stop
 
 ---
 
-## Stage 5: DOCUMENT
+## Step 4: Postmortem + Merge
 
-- **Agent**: debugger + devops
-- **Action**:
-  1. debugger assesses postmortem need:
-     - Bug could recur / affects critical path / took >30min → write `POSTMORTEM.md`
-     - Simple one-off → skip postmortem
-  2. devops performs:
-     - Update `CHANGELOG.md` under `### Fixed`
-     - Squash merge to target branch
-     - Delete fix branch
-     - Pipeline retrospective
-- **Output**: `POSTMORTEM.md` (if warranted), updated `CHANGELOG.md`
-- **Gate**: Auto-proceed
+- **Skills**: `postmortem`, `release-checklist`, `git-ops`
+- **Postmortem**: default ON. Skip only for trivial bugs (< 5 min fix, typo, one-off, no systemic lesson).
+- **Release checklist**: pre-merge section
+- **Merge**: `git-ops` squash-merge; update `CHANGELOG.md` under `### Fixed`; delete fix branch
+- **Finalize**: `bash hooks/scripts/pipeline-complete.sh`
+
+---
+
+## Dependency Graph
+
+```
+Step 1 (debugger agent)
+   ↓
+   HARD GATE (diagnosis approval)
+   ↓
+Step 2 (fix via tdd)
+   ↓
+Step 3 (verify)  ← SOFT GATE on failure
+   ↓
+Step 4 (postmortem + merge)
+```
+
+## What Changed From v1
+
+- 3 agents (debugger + devops + developer + qa) → 1 agent (debugger only)
+- Postmortem decision moved from "debugger subagent assesses" to "default ON, defined skip rule"
+- Devops/developer/qa work now happens directly via skills, saving subagent token cost
