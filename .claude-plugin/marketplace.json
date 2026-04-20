@@ -7,8 +7,8 @@
   "plugins": [
     {
       "name": "claude-company-of-one",
-      "description": "Claude for solopreneur — Enterprise-grade agent pipelines for solo developers",
-      "version": "0.7.3",
+      "description": "Claude for solopreneur — Skills-first shipping rituals for solo developers",
+      "version": "1.0.0-rc.1",
       "source": "./",
       "author": {
         "name": "Brian Huang",

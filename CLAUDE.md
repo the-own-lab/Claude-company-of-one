@@ -1,14 +1,18 @@
 # Company of One — Project Instructions
 
 This project is a Claude Code / Codex plugin called **Claude 一人公司 (Company of One)**.
-It provides enterprise-grade agent pipelines for solo developers.
+It gives solo developers **institutions instead of teammates** — rituals, skills, and two
+focused agents that replace what fake coworker agents used to pretend to do.
 
-## Architecture
+Philosophy: **用制度取代隊友** ("institutions over teammates"). Skills are cheap and
+lazy-loaded; agents are expensive — so agents are the exception, not the default.
 
-- **8 agents**: product-owner, architect, developer, qa, reviewer, debugger, devops, ui-designer
-- **6 commands**: /develop, /debug, /refactor, /review, /plan, /learn
-- **16 skills**: orchestrator + 15 domain skills in `skills/`
-- **Orchestrator**: auto-detects user intent and sizes tasks (Small/Medium/Large)
+## Architecture (v2)
+
+- **2 agents**: `reviewer` (fresh eyes for code review), `debugger` (isolated root cause analysis)
+- **3 commands**: `/ship` (sizes Small/Medium/Large), `/debug`, `/ship-weekly`
+- **~25 skills**: `orchestrator` + domain skills (engineering, institutional, business-bridge)
+- **Orchestrator**: routes through skill chains; spawns at most one agent per pipeline
 
 ## Plugin Structure
 
@@ -50,3 +54,17 @@ templates/               → Document templates (referenced by skills, not stand
 - Write standalone docs for Small/Medium tasks
 - Start pipelines for simple questions
 - Use Large pipeline for Small tasks
+- Reintroduce demoted agents (product-owner, architect, developer, qa, devops, ui-designer)
+  without a written justification — v2 removed them deliberately for token and context reasons
+
+## Recommended Companion Plugins
+
+Not bundled, but recommended for the "one-person company" surface area this plugin doesn't cover:
+
+- **[coreyhaines31/marketingskills](https://github.com/coreyhaines31/marketingskills)** — SaaS
+  marketing pack (22k+ stars). Curated starter: `product-marketing-context`, `page-cro`,
+  `copywriting`, `seo-audit`, `launch-strategy`, `pricing-strategy`, `churn-prevention`.
+
+Explicitly **not recommended**: `alirezarezvani/claude-skills` — 232 skills cause context
+pollution for solo developers; the C-level / compliance / M&A scaffolding is noise at this
+scale. Cherry-pick 3–5 skills only if you have a specific need.

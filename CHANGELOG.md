@@ -7,6 +7,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — BREAKING: v2 skills-first redesign
+
+Company of One v2 replaces the agent-centric v1 model with a skills-centric one.
+The philosophy shifts from "simulate teammates" to "institutions over teammates".
+
+**Agents: 8 → 2.** Only `reviewer` and `debugger` remain — both need isolated context.
+
+**Commands: 6 → 3.** `/ship` (unified via orchestrator sizing), `/debug`, `/ship-weekly`.
+
+**Migration:**
+
+- `/develop`, `/refactor`, `/plan`, `/review` → `/ship` (orchestrator sizes Small/Medium/Large)
+- `/learn` → `learn` skill (invoked on demand, no top-level command)
+- `product-owner` agent → `requirements` + new `success-metric` skills
+- `architect` agent → new `design-doc` + existing `write-plan` skills
+- `developer` agent → direct Claude execution via `execute-plan` + `tdd` skills
+- `qa` agent → new `test-plan` + existing `test-verify` skills
+- `devops` agent → new `release-checklist` + existing `git-ops` skills
+- `ui-designer` agent → new `wireframe` skill
+
+### Added
+
+New institutional skills (from Duolingo / Google rituals):
+
+- `design-doc` — mandates Non-Goals + Alternatives Considered
+- `weekly-ship` — Duolingo "Ship It" ritual; feeds `/ship-weekly`
+- `success-metric` — measurable outcome required per feature
+- `decide` — 3-line ADR lite; complements heavier `adr`
+
+New role-bridge skills (partial business roles):
+
+- `saas-pricing` — pricing heuristics for solo founders
+- `changelog-launch-post` — CHANGELOG → launch post drafts
+
+Demoted-from-agent skills (new; see migration above):
+
+- `test-plan`, `release-checklist`, `wireframe`
+
+### Removed
+
+- `/develop`, `/refactor`, `/plan`, `/review`, `/learn` commands
+- `product-owner`, `architect`, `developer`, `qa`, `devops`, `ui-designer` agents
+- Pipeline references `pipeline-medium.md`, `pipeline-plan.md`, `pipeline-refactor.md`,
+  `pipeline-review.md` (merged into the unified `pipeline-develop.md`)
+
+### Recommended Companion
+
+For marketing / CRO / SEO skills outside this plugin's scope, install
+[`coreyhaines31/marketingskills`](https://github.com/coreyhaines31/marketingskills).
+See `CLAUDE.md` for the curated starter list.
+
 ## [0.7.3] - 2026-04-09
 
 ### Added
