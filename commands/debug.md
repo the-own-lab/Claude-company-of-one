@@ -1,73 +1,55 @@
 ---
 name: debug
-description: 'Systematic debugging: reproduce → diagnose → fix → verify → postmortem. No guessing. Uses the debugger agent for isolated root cause analysis, then skills for the rest.'
+description: 'Reproduce → hypothesize → validate one-at-a-time → fix via TDD → regression test → summarize. No shotgun debugging.'
 ---
 
-# /debug — Systematic Debugging
+# /debug <problem>
 
-Root cause analysis first, fix second, postmortem third. The `debugger` agent runs in isolated context (fresh eyes for diagnosis); everything else is skills.
+Structured debug loop. Replaces the v2 `debugger` agent.
+
+## Usage
+
+```
+/debug <problem>
+```
+
+If `<problem>` is missing, print the example above and exit.
 
 ## Flow
 
-### 1. Reproduce + Diagnose (agent: `debugger`)
+### Pre
 
-Spawn the **debugger** agent. It reproduces, traces, hypothesizes, and returns a root cause.
+1. **read-brief** — `brief-manager.sh init debug "<problem>"`. Fold in the
+   reproducer, error output, and the active spec (if any) so mid-step skills
+   read only the brief.
 
-**Output:** `DIAGNOSIS.md` in the feature spec directory, with:
+### Mid
 
-- Minimal reproduction case
-- Root cause (with evidence)
-- Blast radius
-- Recommended fix
+2. **debug-hypotheses** — list 3–5 candidate causes with evidence-for,
+   evidence-against, confidence, and validation method. No padding.
+3. **debug-validate** — pick the highest-confidence hypothesis, run the stated
+   validation. Test exactly one hypothesis per iteration. If disproved, loop
+   back to step 2 with the hypothesis crossed out and new evidence recorded.
+   Shotgun debugging (change-many-things-and-rerun) is a hard refuse.
+4. Once the root cause is confirmed, record it in the brief's `### Root Cause`.
+5. **tdd** — write a regression test that fails on the bug, then fix the code
+   until it passes. Minimum change; no unrelated cleanup.
+6. **verify** — full suite green, security lens pass.
 
-### 2. Diagnosis gate (HARD)
+### Post
 
-Present the diagnosis summary to the user.
+7. **update-docs** — CHANGELOG `Fixed` entry + TODO tick (if applicable). If no
+   active spec exists, append to the issue tracker entry, NOT a new half-spec.
+8. **debug-summarize** (inline in this command, not a separate skill file):
+   emit one-paragraph postmortem capturing symptom, root cause, fix, and any
+   follow-ups. Append to the issue file under `docs/projects/<project>/issues/`.
+9. Archive brief via `brief-manager.sh archive`.
 
-> Stage 2 Complete: Diagnosis
-> Root cause: {1-sentence summary}
-> Blast radius: {affected areas}
-> Recommended fix: {1-sentence}
->
-> Reply **'approved'** to proceed, or give alternative direction.
+No `session-reflection` for `/debug` per ADR-001 D7.
 
-Do not proceed until the user confirms. Fixing the wrong root cause creates new bugs.
+## Hard rules
 
-### 3. Fix (no agent — direct execution)
-
-- Invoke `git-ops` skill → create `fix/{bug-slug}` branch
-- Invoke `tdd` skill → failing test (RED) → minimum fix (GREEN) → refactor
-- Commit: `fix({scope}): {description}`
-
-### 4. Verify (skills)
-
-- Invoke `test-verify` skill → confirm original repro now passes + full suite green + blast-radius tests
-- If verify fails: return to step 1 (rediagnose) or step 3 (incomplete fix)
-
-### 5. Postmortem (auto-triggered)
-
-Always invoke the `postmortem` skill on completion.
-
-- Skip the written postmortem only for trivial bugs (typo, one-off, < 5 min fix)
-- Otherwise produce `POSTMORTEM.md` (blameless; timeline, root cause, action items)
-
-### 6. Merge (skill)
-
-- Invoke `release-checklist` skill (pre-merge section)
-- Squash-merge to target branch via `git-ops`
-- Clean up fix branch
-
-## Pipeline Complete
-
-> ✓ /debug complete
->
-> Bug: {title}
-> Root cause: {summary}
-> Branch: merged to {target}
-> Artifacts: DIAGNOSIS.md, POSTMORTEM.md (if written)
-
-## Notes
-
-- Only one agent spawned: `debugger` (step 1). Everything else is skills — major token savings vs v1.
-- Postmortem is no longer conditional on a subagent deciding; it's the default, with a well-defined skip rule.
-- If the task turns out to be a refactor rather than a bug, redirect to `/ship`.
+- One hypothesis at a time. Parallel hypothesis testing is shotgun debugging.
+- Fix + regression test always ship together. A fix without a test is rejected.
+- If 5 hypotheses all disprove, stop and re-read the brief — the model of the
+  system is wrong, not the hypotheses.
