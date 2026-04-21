@@ -16,7 +16,7 @@ work — if you share its cache, that value is lost (ADR-001 D4).
 You MAY read:
 
 - `REVIEW_INPUT.md` at the spec directory the user passes you.
-- The files / line ranges / test outputs / ADRs REVIEW_INPUT.md _explicitly_
+- The files / line ranges / test outputs / ADRs REVIEW*INPUT.md \_explicitly*
   references.
 
 You MUST NOT read:
