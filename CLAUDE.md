@@ -1,11 +1,9 @@
 # Company of One — Project Instructions
 
 This project is a Claude Code / Codex plugin called **Claude 一人公司 (Company of One)**.
-It gives solo developers **institutions instead of teammates** — rituals, skills, and one
-focused agent that replace what fake coworker agents used to pretend to do.
+It gives solo developers **institutions instead of teammates** — rituals, skills, and one focused agent that replace what fake coworker agents used to pretend to do.
 
-Philosophy: **用制度取代隊友** ("institutions over teammates"). Skills are cheap and
-lazy-loaded; agents are expensive — so agents are the exception, not the default.
+**IMPORTANT**: Always bump the versions in marketplace.json and plugin.json after implementation
 
 ## Architecture (v3)
 
@@ -14,21 +12,6 @@ lazy-loaded; agents are expensive — so agents are the exception, not the defau
 - **17 skills**: `read-brief`, `write-brief`, `research`, `clarify`, `spec-writing`, `adr-writing`, `explain-60-40`, `tdd`, `test-plan`, `verify`, `red-team`, `critique-dialogue`, `spec-conformance`, `update-docs`, `session-reflection`, `debug-hypotheses`, `debug-validate`
 - **Context contract**: `MEMORY.md` → `read-brief` → `BRIEF.md` → skills. Skills never read MEMORY directly.
 - **Deterministic scripts** replace the v2 pipeline state machine (see `hooks/scripts/`)
-
-See `docs/projects/claude-company-of-one/adr/001-v3-command-and-context-model.md` and
-`docs/projects/claude-company-of-one/adr/002-human-owned-core-and-prediction-loop.md`
-for the accepted v3 architecture.
-
-## Plugin Structure
-
-```
-.claude-plugin/          → Claude Code plugin manifest
-agents/                  → Agent definitions (reviewer only)
-commands/                → Slash commands (/think, /dev, /review, /debug)
-skills/                  → Skills with SKILL.md (each skill references its template)
-hooks/                   → Hook scripts (brief / docs / diff / review-input / spec-conformance)
-templates/               → Document templates: BRIEF.md, REVIEW_INPUT.md, REVIEW.md, etc.
-```
 
 ## Conventions
 
@@ -61,25 +44,3 @@ Commands fail fast when their parameter is missing. No inference, no routing.
 - Comments explain WHY, never WHAT
 - Error messages are actionable (what went wrong + what to do)
 - YAGNI — don't build what you don't need yet
-
-## Do NOT
-
-- Add a task-sizing layer (S/M/L) back into any command. v3 removed it deliberately.
-- Let skills read `MEMORY.md` directly — only `read-brief` may load MEMORY into the brief.
-- Auto-escalate `/think` to the reviewer agent. Adversarial spec review is invoked
-  explicitly via `/review <topic>`.
-- Reintroduce demoted agents (product-owner, architect, developer, qa, devops, ui-designer,
-  debugger) without a written ADR justifying it.
-- Revive `orchestrator`, `ship`, `execute-plan`, or pipeline-state / wave vocabulary.
-
-## Recommended Companion Plugins
-
-Not bundled, but recommended for the "one-person company" surface area this plugin doesn't cover:
-
-- **[coreyhaines31/marketingskills](https://github.com/coreyhaines31/marketingskills)** — SaaS
-  marketing pack (22k+ stars). Curated starter: `product-marketing-context`, `page-cro`,
-  `copywriting`, `seo-audit`, `launch-strategy`, `pricing-strategy`, `churn-prevention`.
-
-Explicitly **not recommended**: `alirezarezvani/claude-skills` — 232 skills cause context
-pollution for solo developers; the C-level / compliance / M&A scaffolding is noise at this
-scale. Cherry-pick 3–5 skills only if you have a specific need.
