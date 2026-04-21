@@ -109,27 +109,18 @@ company_of_one_project_dir() {
   echo "$(company_of_one_plugin_data)/projects/$(company_of_one_project_key)"
 }
 
-company_of_one_memory_dir() {
-  echo "$(company_of_one_project_dir)/patterns"
-}
-
 company_of_one_briefs_dir() {
   echo "$(company_of_one_project_dir)/briefs"
 }
 
-company_of_one_specs_dir() {
-  echo "$(company_of_one_project_dir)/specs"
-}
-
+# v3 drift guard: specs and ADRs live in docs/projects/<project>/ in the
+# monorepo, not under plugin-data. No plugin-data specs dir. No patterns dir
+# (v2 learn/pattern-index removed — see ADR-001 D5).
 company_of_one_init_storage() {
   local project_dir
   project_dir="$(company_of_one_project_dir)"
-  mkdir -p \
-    "$project_dir/patterns" \
-    "$project_dir/briefs/history" \
-    "$project_dir/specs"
+  mkdir -p "$project_dir/briefs/history"
 
-  # Update project index
   company_of_one_update_project_index
 }
 
