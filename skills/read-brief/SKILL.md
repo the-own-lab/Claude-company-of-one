@@ -20,14 +20,14 @@ After this, every other skill reads only the brief (ADR-001 D1/D2).
 
 ## Outputs
 
-- `${COMPANY_OF_ONE_PLUGIN_DATA}/projects/<key>/briefs/current.md` — populated
-  BRIEF.md with every section filled. Written via the plugin-rooted
+- `${COMPANY_OF_ONE_PLUGIN_DATA}/projects/<key>/sessions/<session-id>/BRIEF.md`
+  — populated BRIEF.md with every section filled. Written via the
   `brief-manager.sh init <command> <feature>` invocation below.
   plus Edit-tool section updates.
 
 ## Procedure
 
-1. Run `bash "${COMPANY_OF_ONE_PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-${CODEX_PLUGIN_ROOT:?Set COMPANY_OF_ONE_PLUGIN_ROOT to the plugin root}}}/hooks/scripts/lib/brief-manager.sh" init <command> "<feature>"` to scaffold
+1. Run `bash "hooks/scripts/lib/brief-manager.sh" init <command> "<feature>"` to scaffold
    the brief from `templates/BRIEF.md`.
 2. If a spec dir exists, fill `## Active Specs` with REQUIREMENTS / DESIGN / TODO / ADR paths and short source fingerprints.
    Then compile the source docs into these fixed brief sections so downstream
@@ -49,7 +49,7 @@ After this, every other skill reads only the brief (ADR-001 D1/D2).
    sections above.
 6. Leave `## Human-Owned Core` as template placeholders only until `explain-60-40`
    fills it later. Before any execute/review step, placeholders must be gone.
-7. Run `bash "${COMPANY_OF_ONE_PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-${CODEX_PLUGIN_ROOT:?Set COMPANY_OF_ONE_PLUGIN_ROOT to the plugin root}}}/hooks/scripts/lib/brief-manager.sh" check-budget`.
+7. Run `bash "hooks/scripts/lib/brief-manager.sh" check-budget`.
 
 ## Failure modes
 

@@ -10,11 +10,12 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=hooks/scripts/lib/common.sh
 . "$SCRIPT_DIR/lib/common.sh"
 
-PROJECT_DIR="$(company_of_one_project_dir)"
-mkdir -p "$PROJECT_DIR"
+SESSION_DIR="$(company_of_one_session_dir)"
+BRIEF_PATH="$SESSION_DIR/BRIEF.md"
+mkdir -p "$SESSION_DIR"
 
-if [ -f "$PROJECT_DIR/briefs/current.md" ]; then
-  echo "Pre-compact: active brief at $PROJECT_DIR/briefs/current.md will be restored after compaction."
+if [ -f "$BRIEF_PATH" ]; then
+  echo "Pre-compact: active brief pointer at $BRIEF_PATH will be restored after compaction."
 else
   echo "Pre-compact: no active brief."
 fi

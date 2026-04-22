@@ -7,12 +7,12 @@ focused agents that replace what fake coworker agents used to pretend to do.
 Philosophy: **用制度取代隊友** ("institutions over teammates"). Skills are cheap and
 lazy-loaded; agents are expensive — so agents are the exception, not the default.
 
-## Architecture (v2)
+## Architecture (v3)
 
-- **2 agents**: `reviewer` (fresh eyes for code review), `debugger` (isolated root cause analysis)
-- **3 commands**: `/ship` (sizes Small/Medium/Large), `/debug`, `/ship-weekly`
-- **~25 skills**: `orchestrator` + domain skills (engineering, institutional, business-bridge)
-- **Orchestrator**: routes through skill chains; spawns at most one agent per pipeline
+- **1 agent**: `reviewer` (fresh-context adversarial review, used only by `/review`)
+- **4 commands**: `/think <topic>`, `/dev <feature>`, `/review <target>`, `/debug <problem>`
+- **17 skills**: command-specific skill chains, no smart routing
+- **Context contract**: `MEMORY.md` → `read-brief` → session-scoped `BRIEF.md` → skills
 
 ## Plugin Structure
 
@@ -28,8 +28,8 @@ templates/               → Document templates (referenced by skills, not stand
 ## Conventions
 
 - Plugin content is all English
-- Pipeline briefs/specs go to `${COMPANY_OF_ONE_PLUGIN_DATA}/projects/{key}/` — never to the project repo
-- Only ADRs go to `docs/adr/` in the project repo (git-tracked)
+- Working briefs go to `${COMPANY_OF_ONE_PLUGIN_DATA}/projects/{key}/sessions/{session-id}/` — never to the project repo
+- Specs and ADRs go to `docs/projects/<project>/` in the monorepo (git-tracked)
 - Commit messages follow conventional commits: `feat(scope):`, `fix(scope):`, `refactor(scope):`
 - CHANGELOG follows Keep a Changelog format
 - Hook scripts use `hooks/scripts/lib/common.sh` for cross-platform path resolution

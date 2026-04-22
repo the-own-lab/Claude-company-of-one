@@ -14,7 +14,7 @@ output IS the docs, so `/think` does not call this skill.
 ## Inputs
 
 - `BRIEF.md` — for feature name, delivered contract, accepted review findings.
-- Git diff summary (via `bash "${COMPANY_OF_ONE_PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-${CODEX_PLUGIN_ROOT:?Set COMPANY_OF_ONE_PLUGIN_ROOT to the plugin root}}}/hooks/scripts/lib/diff-evidence.sh"`).
+- Git diff summary (via `bash "hooks/scripts/lib/diff-evidence.sh"`).
 - Existing `docs/projects/<project>/CHANGELOG.md`.
 - Existing `docs/projects/<project>/specs/<date>-<slug>/TODO.md` (if present).
 
@@ -25,7 +25,7 @@ output IS the docs, so `/think` does not call this skill.
 
 ## Procedure
 
-1. Run `bash "${COMPANY_OF_ONE_PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-${CODEX_PLUGIN_ROOT:?Set COMPANY_OF_ONE_PLUGIN_ROOT to the plugin root}}}/hooks/scripts/lib/docs-check.sh"` to see which docs lag behind the diff.
+1. Run `bash "hooks/scripts/lib/docs-check.sh"` to see which docs lag behind the diff.
 2. Read the current brief's `## Current Contract` and delivered diff.
 3. Update `CHANGELOG.md` under `[Unreleased]`:
    - Categorize entries: Added / Changed / Fixed / Removed / Deprecated.

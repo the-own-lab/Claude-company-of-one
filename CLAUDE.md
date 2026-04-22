@@ -14,13 +14,13 @@ After implementation, bump versions in `marketplace.json` and `plugin.json`.
 ## Conventions
 
 - Plugin content is all English
-- Working briefs (`BRIEF.md`) go to `${COMPANY_OF_ONE_PLUGIN_DATA}/projects/{key}/` — never to the project repo
+- Working briefs (`BRIEF.md`) go to `${COMPANY_OF_ONE_PLUGIN_DATA}/projects/{key}/sessions/{session-id}/` — never to the project repo
 - Specs (REQUIREMENTS / DESIGN / TODO / REVIEW / TEST) and ADRs go to `docs/projects/<project>/` in the monorepo (git-tracked)
 - Hook scripts use `hooks/scripts/lib/common.sh` for cross-platform path resolution
 
 ## Command Invariants
 
-- **Pre**: `read-brief` once (loads REQUIREMENTS / DESIGN / TODO / MEMORY → `BRIEF.md`)
+- **Pre**: `read-brief` once (loads REQUIREMENTS / DESIGN / TODO / MEMORY → session-scoped `BRIEF.md`)
 - **Mid**: skills read only the brief, never re-read source docs or MEMORY
 - **Post**: `update-docs` once, then command-specific reflection: `/dev` uses `session-reflection`; `/review` writes Critique Dialogue; `/debug` uses `debug-summarize`; `/think` has no reflection artifact
 

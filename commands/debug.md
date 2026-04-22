@@ -19,10 +19,10 @@ If `<problem>` is missing, print the example above and exit.
 
 ### Pre
 
-1. **read-brief** — `bash "${COMPANY_OF_ONE_PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-${CODEX_PLUGIN_ROOT:?Set COMPANY_OF_ONE_PLUGIN_ROOT to the plugin root}}}/hooks/scripts/lib/brief-manager.sh" init debug "<problem>"`. Fold in the
+1. **read-brief** — `bash "hooks/scripts/lib/brief-manager.sh" init debug "<problem>"`. Fold in the
    reproducer, error output, and the active spec (if any) so mid-step skills
    read only the brief. Run
-   `bash "${COMPANY_OF_ONE_PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-${CODEX_PLUGIN_ROOT:?Set COMPANY_OF_ONE_PLUGIN_ROOT to the plugin root}}}/hooks/scripts/lib/brief-manager.sh" check-budget`
+   `bash "hooks/scripts/lib/brief-manager.sh" check-budget`
    before hypothesis work.
 
 ### Mid
@@ -45,7 +45,7 @@ If `<problem>` is missing, print the example above and exit.
 8. **debug-summarize** (inline in this command, not a separate skill file):
    emit one-paragraph postmortem capturing symptom, root cause, fix, and any
    follow-ups. Append to the issue file under `docs/projects/<project>/issues/`.
-9. Archive brief via `bash "${COMPANY_OF_ONE_PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-${CODEX_PLUGIN_ROOT:?Set COMPANY_OF_ONE_PLUGIN_ROOT to the plugin root}}}/hooks/scripts/lib/brief-manager.sh" archive`.
+9. Archive brief via `bash "hooks/scripts/lib/brief-manager.sh" archive`.
 
 No `session-reflection` for `/debug` per ADR-001 D7.
 

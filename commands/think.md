@@ -17,9 +17,9 @@ If `<topic>` is missing, print the example above and exit. No inference, no rout
 
 ## Flow
 
-1. **read-brief** — `bash "${COMPANY_OF_ONE_PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-${CODEX_PLUGIN_ROOT:?Set COMPANY_OF_ONE_PLUGIN_ROOT to the plugin root}}}/hooks/scripts/lib/brief-manager.sh" init think "<topic>"`,
+1. **read-brief** — `bash "hooks/scripts/lib/brief-manager.sh" init think "<topic>"`,
    then populate the brief, classify every MEMORY item (ADR-001 D3), and run
-   `bash "${COMPANY_OF_ONE_PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-${CODEX_PLUGIN_ROOT:?Set COMPANY_OF_ONE_PLUGIN_ROOT to the plugin root}}}/hooks/scripts/lib/brief-manager.sh" check-budget`.
+   `bash "hooks/scripts/lib/brief-manager.sh" check-budget`.
 2. **research** — Web Search + Context7 for any library/API facts the spec will
    depend on.
 3. **clarify** — reverse-question the user to drain `## Open Questions`.
@@ -37,7 +37,7 @@ If `<topic>` is missing, print the example above and exit. No inference, no rout
 
 - No `update-docs`: the written docs ARE the deliverable.
 - No `session-reflection`: ADR-001 D7.
-- Archive the brief via `bash "${COMPANY_OF_ONE_PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-${CODEX_PLUGIN_ROOT:?Set COMPANY_OF_ONE_PLUGIN_ROOT to the plugin root}}}/hooks/scripts/lib/brief-manager.sh" archive`.
+- Archive the brief via `bash "hooks/scripts/lib/brief-manager.sh" archive`.
 
 ## Hard rules
 

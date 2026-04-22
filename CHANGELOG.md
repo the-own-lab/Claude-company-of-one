@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.0] — 2026-04-22
+
+### Changed
+
+- Reworked runtime brief storage from a project-wide `briefs/current.md`
+  singleton to session-scoped `sessions/<session-id>/BRIEF.md` plus a small
+  `CURRENT.json` state file.
+- Session start and post-compact hooks now restore brief pointers instead of
+  injecting full BRIEF content into model context.
+- Command and skill prompts now call stable relative hook scripts instead of
+  repeating host-specific plugin root shell expansion.
+
+### Fixed
+
+- Removed the hard dependency on `CODEX_PLUGIN_ROOT`, `CLAUDE_PLUGIN_ROOT`, or
+  `COMPANY_OF_ONE_PLUGIN_ROOT` being present before hook scripts can start.
+- Prevented separate host sessions with a stable session id from overwriting the
+  same project-wide active brief.
+
 ## [3.0.3] — 2026-04-22
 
 ### Fixed

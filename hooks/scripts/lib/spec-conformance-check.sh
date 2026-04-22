@@ -66,7 +66,7 @@ review_mode_read() {
 
 check_brief_present() {
   local brief_file
-  brief_file="$(company_of_one_briefs_dir)/current.md"
+  brief_file="$(brief_current_path)"
   if [ -f "$brief_file" ]; then
     _ok "active BRIEF.md present"
   else
@@ -79,7 +79,7 @@ check_human_owned_core_filled() {
   # User selected option filled before /dev Execute. Empty template placeholders
   # are flagged as FAIL.
   local brief_file
-  brief_file="$(company_of_one_briefs_dir)/current.md"
+  brief_file="$(brief_current_path)"
   if [ ! -f "$brief_file" ]; then
     _err "no BRIEF.md — cannot verify Human-Owned Core"
     return
@@ -112,7 +112,7 @@ check_human_owned_core_filled() {
 check_ignored_memory_declared() {
   # ADR-001 D3: Ignored Memory section must exist and be non-empty.
   local brief_file
-  brief_file="$(company_of_one_briefs_dir)/current.md"
+  brief_file="$(brief_current_path)"
   if [ ! -f "$brief_file" ]; then
     _err "no BRIEF.md — cannot verify Ignored Memory"
     return
