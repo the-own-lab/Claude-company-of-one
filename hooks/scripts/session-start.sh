@@ -11,6 +11,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 PROJECT_DIR="$(company_of_one_project_dir)"
 RUNTIME_LABEL="$(company_of_one_runtime_label)"
+PLUGIN_ROOT="$(company_of_one_plugin_root)"
 
 company_of_one_init_storage
 
@@ -22,7 +23,7 @@ Commands require a parameter. No routing, no sizing, no inference.
 - /review <target>   — three-layer adversarial review (spec | implementation)
 - /debug <problem>   — guided hypothesize → validate → regression-test
 Context contract: MEMORY → read-brief → BRIEF.md → skills. Skills never read MEMORY directly.
-Brief scripts: run via ${plugin_root}/hooks/scripts/lib/brief-manager.sh (init, read, path, check-budget, archive).
+Brief scripts: run via ${PLUGIN_ROOT}/hooks/scripts/lib/brief-manager.sh (init, read, path, check-budget, archive).
 Reviewer agent is only spawned by /review. /think never auto-escalates.
 </company-of-one>
 CONTEXT

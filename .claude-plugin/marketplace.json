@@ -8,7 +8,7 @@
     {
       "name": "claude-company-of-one",
       "description": "Claude for solopreneur — Skills-first shipping rituals for solo developers",
-      "version": "3.0.2",
+      "version": "3.0.3",
       "source": "./",
       "author": {
         "name": "Brian Huang",

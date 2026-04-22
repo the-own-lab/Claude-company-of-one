@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.3] — 2026-04-22
+
+### Fixed
+
+- Initialize the plugin root in `session-start.sh` before printing hook guidance
+  so strict shell mode does not fail with an unbound variable.
+
 ## [3.0.2] — 2026-04-22
 
 ### Fixed
