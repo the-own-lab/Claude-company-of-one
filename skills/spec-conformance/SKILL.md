@@ -39,7 +39,7 @@ the thing being self-reviewed.
 ## Procedure
 
 1. Run the deterministic half when in `/review`:
-   `bash hooks/scripts/lib/spec-conformance-check.sh pre-review <spec_dir> <base_ref>`.
+   `bash "${COMPANY_OF_ONE_PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-${CODEX_PLUGIN_ROOT:?Set COMPANY_OF_ONE_PLUGIN_ROOT to the plugin root}}}/hooks/scripts/lib/spec-conformance-check.sh" pre-review <spec_dir> <base_ref>`.
    If FAIL, stop with Layer 1 FAIL.
 2. **think-self-review**: check the brief's draft REQ/DESIGN/TODO for:
    - Every REQ has a testable acceptance criterion.

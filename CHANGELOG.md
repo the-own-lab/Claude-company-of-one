@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.1] — 2026-04-22
+
+### Fixed
+
+- Use plugin-rooted hook script paths in command and skill prompts so activated
+  plugins work from any project working directory.
+
 ## [3.0.0] — 2026-04-21
 
 ### Changed (breaking)

@@ -21,12 +21,13 @@ reads only the brief (ADR-001 D1/D2).
 ## Outputs
 
 - `${COMPANY_OF_ONE_PLUGIN_DATA}/projects/<key>/briefs/current.md` — populated
-  BRIEF.md with every section filled. Written via `brief-manager.sh init <command> <feature>`
+  BRIEF.md with every section filled. Written via the plugin-rooted
+  `brief-manager.sh init <command> <feature>` invocation below.
   plus Edit-tool section updates.
 
 ## Procedure
 
-1. Run `bash hooks/scripts/lib/brief-manager.sh init <command> "<feature>"` to scaffold
+1. Run `bash "${COMPANY_OF_ONE_PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-${CODEX_PLUGIN_ROOT:?Set COMPANY_OF_ONE_PLUGIN_ROOT to the plugin root}}}/hooks/scripts/lib/brief-manager.sh" init <command> "<feature>"` to scaffold
    the brief from `templates/BRIEF.md`.
 2. If a spec dir exists, fill `## Active Specs` with REQUIREMENTS / DESIGN / TODO / ADR paths.
    Then fold the source docs into these fixed brief sections so downstream skills

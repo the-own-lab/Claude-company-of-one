@@ -19,7 +19,7 @@ If `<feature>` is missing, print the example above and exit. No inference, no ro
 
 ### Pre
 
-1. **read-brief** — `bash hooks/scripts/lib/brief-manager.sh init dev "<feature>"`,
+1. **read-brief** — `bash "${COMPANY_OF_ONE_PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-${CODEX_PLUGIN_ROOT:?Set COMPANY_OF_ONE_PLUGIN_ROOT to the plugin root}}}/hooks/scripts/lib/brief-manager.sh" init dev "<feature>"`,
    then classify MEMORY per ADR-001 D3. The brief folds in
    REQUIREMENTS / DESIGN / TODO so mid-step skills never re-read source docs.
 
@@ -27,7 +27,7 @@ If `<feature>` is missing, print the example above and exit. No inference, no ro
 
 2. **explain-60-40** — partition the work, fill `## Human-Owned Core`, force the
    user to predict + pick for each core item. This skill ends by running
-   `bash hooks/scripts/lib/spec-conformance-check.sh pre-execute`. FAIL = stop.
+   `bash "${COMPANY_OF_ONE_PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-${CODEX_PLUGIN_ROOT:?Set COMPANY_OF_ONE_PLUGIN_ROOT to the plugin root}}}/hooks/scripts/lib/spec-conformance-check.sh" pre-execute`. FAIL = stop.
 3. **test-plan** — four buckets; `Won't test` is mandatory. Reads the brief's
    contract + Human-Owned Core, not source docs.
 4. **tdd** — RED → GREEN → REFACTOR, one behavior at a time.
@@ -42,7 +42,7 @@ If `<feature>` is missing, print the example above and exit. No inference, no ro
    prediction to final code; if any item is `diverged`, invoke
    `spec-conformance` reconstruction-drill judge. Do NOT soften `diverged` to
    `mostly aligned`.
-8. Archive brief via `brief-manager.sh archive`.
+8. Archive brief via `bash "${COMPANY_OF_ONE_PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-${CODEX_PLUGIN_ROOT:?Set COMPANY_OF_ONE_PLUGIN_ROOT to the plugin root}}}/hooks/scripts/lib/brief-manager.sh" archive`.
 
 ## Hard rules
 

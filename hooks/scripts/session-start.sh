@@ -22,7 +22,7 @@ Commands require a parameter. No routing, no sizing, no inference.
 - /review <target>   — three-layer adversarial review (spec | implementation)
 - /debug <problem>   — guided hypothesize → validate → regression-test
 Context contract: MEMORY → read-brief → BRIEF.md → skills. Skills never read MEMORY directly.
-Brief scripts: hooks/scripts/lib/brief-manager.sh (init, read, path, archive).
+Brief scripts: run via ${plugin_root}/hooks/scripts/lib/brief-manager.sh (init, read, path, archive).
 Reviewer agent is only spawned by /review. /think never auto-escalates.
 </company-of-one>
 CONTEXT

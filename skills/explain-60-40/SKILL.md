@@ -41,7 +41,7 @@ onto `/dev` without a new flag or command. This skill IS the prediction-loop ent
    a. Predict the final code's shape in 1–3 lines of pseudocode or plain English.
    b. Pick the option they are selecting.
 5. Write predictions and selections into the brief (via `write-brief`).
-6. Run `bash hooks/scripts/lib/spec-conformance-check.sh pre-execute`. If FAIL,
+6. Run `bash "${COMPANY_OF_ONE_PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-${CODEX_PLUGIN_ROOT:?Set COMPANY_OF_ONE_PLUGIN_ROOT to the plugin root}}}/hooks/scripts/lib/spec-conformance-check.sh" pre-execute`. If FAIL,
    stop — do not proceed to `tdd`.
 
 ## Failure modes

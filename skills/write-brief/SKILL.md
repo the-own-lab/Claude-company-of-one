@@ -24,7 +24,7 @@ so later skills in the chain see the same source of truth (ADR-001 D2).
 
 ## Procedure
 
-1. Get brief path via `bash hooks/scripts/lib/brief-manager.sh path`.
+1. Get brief path via `bash "${COMPANY_OF_ONE_PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-${CODEX_PLUGIN_ROOT:?Set COMPANY_OF_ONE_PLUGIN_ROOT to the plugin root}}}/hooks/scripts/lib/brief-manager.sh" path`.
 2. Read the file with Read.
 3. Locate the target `##` heading. Preserve all other sections verbatim.
 4. Apply the update via the Edit tool. Prefer append; replace only when explicitly instructed.
